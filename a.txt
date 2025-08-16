@@ -1,0 +1,5 @@
+ijob PrintTwice printerTwice hyper-juxtaposition!
+delay delayC 0_0_0_1_;
+
+job print argPrinter $word
+ijob PrintTwice PrintTwice $word

@@ -1,0 +1,11 @@
+seq
+trig time_cycle 0_0_0_2_;
+ijob RetWord returnAWord WORD! = $word
+delay delayC 0_0_0_1_;
+if wordIF $word == WORDS! ->
+job print ifPrinter ddd <>
+>| >>
+job print elsePrinter Hello <>
+>|
+job print afterIfPrint2 $word
+

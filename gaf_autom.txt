@@ -1,0 +1,6 @@
+seq
+trig time_cycle 0_0_0_5_;
+job print printer Hello-World!
+delay printerBDelay 0_0_0_2_;
+job print printerB Bye!
+ijob PrintTwice _ njk

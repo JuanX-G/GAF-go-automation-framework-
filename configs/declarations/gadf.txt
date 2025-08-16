@@ -1,0 +1,3 @@
+gaa: PrintTwice(string)
+gaa: AskForWord(string)
+gaa: RetWord(string)string
