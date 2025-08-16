@@ -186,7 +186,6 @@ func ParseAutomation(data, name string, iFuncs IMaps) (comps.Automation, error) 
 				} else if block {
 					parsed := parseLine(e, &AutomationV)
 					if parsed != nil {
-						fmt.Println(parsed.Name())
 						codeBlock = append(codeBlock, parsed)
 						ifVar.Block = codeBlock
 					}

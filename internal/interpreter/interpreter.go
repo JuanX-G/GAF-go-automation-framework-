@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"path/filepath"
 
 	"github.com/traefik/yaegi/interp"
 	"github.com/traefik/yaegi/stdlib"
@@ -70,7 +71,8 @@ The declarations are stored under "configs/declarations/gadf.txt"
 */
 func ReadDecl() (map[string]string, error) {
 	rMap := make(map[string]string)
-	os.Chdir(".\\configs\\declarations")
+	filePath, err := filepath.Localize("./configs/declarations")
+	err = os.Chdir(filePath)
 	defer os.Chdir("..\\..")
 	dir, err := os.ReadDir(".")
 	if err != nil {
@@ -124,7 +126,8 @@ func ReadDecl() (map[string]string, error) {
 
 func LoadAction() (map[string]string, error) {
 	rMap := make(map[string]string)
-	os.Chdir(".\\configs\\actions\\")
+	filePath, err := filepath.Localize("./configs/actions")
+	err = os.Chdir(filePath)
 	defer os.Chdir("..\\..")
 	dir, err := os.ReadDir(".")
 	if err != nil {

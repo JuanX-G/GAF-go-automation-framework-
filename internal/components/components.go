@@ -140,9 +140,6 @@ func (i *IfBlock) Run(ctx context.Context) {
 		val2 = i.Arg2
 	}
 
-	for _, l := range i.ElseBlock {
-		fmt.Println("else", l)
-	}
 	switch i.Operator {
 	case "==":
 		if val1 == val2 {

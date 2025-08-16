@@ -12,8 +12,51 @@ import (
 	"strings"
 )
 
+// provide a / slash separated path
+func PathLocalize(filePath string) (string, error) {
+	if filePathStyle == "unix" {
+		return filePath, nil 		
+	} else if filePathStyle == "windows" {
+		return strings.ReplaceAll(filePath, "/", "\\"), nil
+	}
+	
+	return "", fmt.Errorf("Config error")
+}
+func parseConf() map[string]string {
+	err := os.Chdir("./configs")
+	if err != nil {
+		err := os.Chdir(".\\configs")
+		if err != nil {
+			fmt.Println("Error parsing main conf", err)
+			os.Exit(1)
+		}
+	}
+	defer os.Chdir("..")
+	f, err := os.ReadFile("main.conf")
+	if err != nil {
+		fmt.Println("Error parsing main conf", err)
+		os.Exit(1)
+	}
+	vkMap := make (map[string]string)
+	lines := strings.Split(string(f), "\n")
+	for i, v := range lines {
+		valKey := strings.Split(v, "=")
+		if len(valKey) < 2 {
+			fmt.Println("config error at line", i + 1)
+		} else {
+			vkMap[valKey[0]] = valKey[1]
+		}
+	}
+	return vkMap
+}
+
 func runWrap(imap parser.IMaps) {
-	err := os.Chdir(".\\configs\\automations")
+	filePath, err := PathLocalize("./configs/automations")
+
+	if err != nil {
+		panic(err)
+	}
+	err = os.Chdir(filePath)
 	if err != nil {
 		fmt.Println("error occured reading the automations!", err)
 		os.Exit(1)
@@ -103,7 +146,22 @@ func loadImports() parser.IMaps {
 	return rMap
 }
 
+var filePathStyle string
+
 func main() {
+	confMap := parseConf()
+	for k, v := range confMap {
+	switch k {
+	case "PathStyle":
+		if v == "Unix" {
+			filePathStyle = "unix"
+		} else if v == "windows" {
+			filePathStyle = "windows"
+		}
+		// TODO: add systax error handling
+	}
+	}
+
 	iMap := loadImports()
 	// in := bufio.NewReader(os.Stdin)
 	args := os.Args
@@ -118,12 +176,12 @@ func main() {
 			var userAName string
 			fmt.Println("what automatinon do you want to run")
 			fmt.Scan(&userAName)
+			filePath, err := PathLocalize("./configs/automations")
 
-			err := os.Chdir(".\\configs\\automations")
 			if err != nil {
-				fmt.Println("error occured reading the automations!", err)
-				os.Exit(1)
+				panic(err)
 			}
+			err = os.Chdir(filePath)
 			aDir, err := os.ReadDir(".")
 			if err != nil {
 				fmt.Println("error occured reading the automations!", err)
