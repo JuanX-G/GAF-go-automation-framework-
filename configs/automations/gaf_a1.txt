@@ -1,4 +1,5 @@
 seq
+job rssFetchParse rssName https://medium.com/feed/@codingplainenglish title
 trig time_cycle 0_0_0_2_;
 ijob RetWord returnAWord WORD! = $word
 delay delayC 0_0_0_1_;

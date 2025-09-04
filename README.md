@@ -10,10 +10,6 @@ A simple and minimal automation framework written in go that relies on go for sc
         |
         |- cmd
             |- main.go
-        |- internal
-            | - [prog_modules]
-        |- pkgs
-        |- vendor 
         |- configs
             |- actions/ #here your declare your own function to be used in scripts. File names must be gaa_[your_name].go
             |- automations/ #here you define your full scripts using the smaller function in 'actions'. File names must follow gaf_[your_name].txt

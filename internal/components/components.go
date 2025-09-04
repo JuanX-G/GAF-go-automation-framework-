@@ -7,7 +7,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/mmcdole/gofeed"
 )
+
 
 /*
 action interface is a interface
@@ -250,6 +252,49 @@ func (d DelayAction) Name() string {
 	return d.NameV
 }
 
+type RssFetcherParser struct {
+	NameV string
+	Url string
+	Format string
+	feed *gofeed.Feed
+	err error
+}
+
+func (R *RssFetcherParser) Run(ctx context.Context) {
+	fp := gofeed.NewParser()
+	feed, errV := fp.ParseURL(R.Url)
+	R.err = errV
+	if feed == nil {
+		fmt.Printf("Error getting the rss feed under url '%s' with name '%s'\n", R.Url, R.Name())
+		return 
+	}
+	R.feed = feed
+}
+
+func (R RssFetcherParser) Name() string {
+	return R.NameV
+}
+
+func (R RssFetcherParser) PassArgs_1s(arg string) {
+	R.Url = arg
+}
+
+func (R RssFetcherParser) PassArgs_2s(arg string, arg2 string) {
+	R.Url = arg
+}
+
+func (R RssFetcherParser) ReadRet_1s() string {
+	if R.err != nil {
+		return "_NORET" // to be changed to _ERRRET when error handling is added
+	}
+	R.Format = SanitizeLFCR(R.Format)
+	switch R.Format {
+	case "title":
+		return R.feed.Title
+	}
+	return "_NORET" // to be changed to _ERRRET when error handling is added, this would be an error in format syntax
+
+}
 type RunCommand struct {
 	NameV   string
 	Command string

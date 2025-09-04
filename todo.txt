@@ -1,0 +1,4 @@
+Now:
+ [ ] giving time-frames for feeds
+ [ ] returns from feeds 
+ [ ] error values from jobs
