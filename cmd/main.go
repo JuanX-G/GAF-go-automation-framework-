@@ -67,7 +67,6 @@ func runWrap() {
 		fmt.Println("error occured reading the automations!", err)
 		os.Exit(1)
 	}
-	ctx, cancel := context.WithCancel(context.Background())
 
 	for _, v := range aDir {
 		name := v.Name()
@@ -102,16 +101,35 @@ func runWrap() {
 			continue
 		}
 
+		
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		cChan := make(chan string)
+		fmt.Println("Press q AND then enter to stop")
 		go func() {
-			err := r.Starter(ctx)
-			if err != nil {
-				fmt.Println("error starting automation:", err)
+			scanner := bufio.NewScanner(os.Stdin)
+			for scanner.Scan() {
+				text := scanner.Text()
+				if text == "q" {
+					cChan <- "q"
+					return
+				}
 			}
 		}()
-	}
-	defer cancel()
-	select {
-	case <-ctx.Done():
+
+		go func() {
+			if <-cChan == "q" {
+				cancel()       
+				os.Exit(0)    
+			}
+		}()
+
+		err = r.Starter(ctx)
+		if err != nil {
+			fmt.Println("error running starter:", err)
+		}
+
 	}
 }
 
@@ -208,8 +226,8 @@ func runByName() {
 
 			go func() {
 				if <-cChan == "q" {
-					cancel()        // stop the runner
-					os.Exit(0)      // fully exit program
+					cancel()       
+					os.Exit(0)    
 				}
 			}()
 
@@ -233,13 +251,14 @@ func main() {
 			filePathStyle = "unix"
 		} else if v == "windows" {
 			filePathStyle = "windows"
+		} else {
+			fmt.Println("Syntax error, filpath-style must be either 'unix' or 'windows'")
 		}
-		// TODO: add systax error handling
+		
 	}
 	}
 
 	iMap = loadImports()
-	// in := bufio.NewReader(os.Stdin)
 	args := os.Args
 	switch len(args) {
 	case 1:

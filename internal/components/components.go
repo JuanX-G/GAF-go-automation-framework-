@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/mmcdole/gofeed"
-)
 
+)
 
 /*
 action interface is a interface
@@ -252,22 +251,50 @@ func (d DelayAction) Name() string {
 	return d.NameV
 }
 
+/* unfinished feature will be available in the future
 type RssFetcherParser struct {
 	NameV string
 	Url string
 	Format string
 	feed *gofeed.Feed
 	err error
+	timeFrame int // in days
 }
 
 func (R *RssFetcherParser) Run(ctx context.Context) {
+	fmtArr := strings.Split(R.Format, "_")
+	if len(fmtArr) > 1 {
+		R.timeFrame, _ =  strconv.Atoi(SanitizeLFCR(fmtArr[1]))
+		R.Format = SanitizeLFCR(fmtArr[0])
+	}
 	fp := gofeed.NewParser()
 	feed, errV := fp.ParseURL(R.Url)
-	R.err = errV
+	currTime := time.Now()
+	_, monc, dayc := currTime.Date()
+
 	if feed == nil {
 		fmt.Printf("Error getting the rss feed under url '%s' with name '%s'\n", R.Url, R.Name())
 		return 
 	}
+	 
+	if dayc <= R.timeFrame {
+		dayc = 30 // susprt diffrent month lenghts
+		monc = monc - 1
+		dayc = dayc - R.timeFrame
+	} else {
+		dayc = dayc - R.timeFrame
+	}
+	for i, v := range feed.Items {
+		Pdate := v.PublishedParsed
+		d := time.Duration(R.timeFrame) * time.Hour * 24
+		tfTime := currTime.Add(-d)
+		// fmt.Println("pd", Pdate.String(), "tf", tfTime.String())
+		if Pdate.Before(tfTime) {
+			feed.Items[i] = nil
+		}
+	}
+	
+	R.err = errV
 	R.feed = feed
 }
 
@@ -291,10 +318,18 @@ func (R RssFetcherParser) ReadRet_1s() string {
 	switch R.Format {
 	case "title":
 		return R.feed.Title
+	case "items":
+		for _, v := range R.feed.Items {
+			if v == nil {
+				continue
+			}
+			fmt.Println(v.Content)
+		}
 	}
 	return "_NORET" // to be changed to _ERRRET when error handling is added, this would be an error in format syntax
 
 }
+*/
 type RunCommand struct {
 	NameV   string
 	Command string

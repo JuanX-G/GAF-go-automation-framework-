@@ -295,16 +295,6 @@ func ParseAutomation(data, name string, iFuncs IMaps) (comps.Automation, error) 
 
 					AutomationV.SvarsName = append(AutomationV.SvarsName, varN)
 				}
-			case "rssFetchParse":
-				if len(lineElems) < 5 {
-					continue
-				}
-				actionRss := &comps.RssFetcherParser{
-					NameV: lineElems[2],
-					Url: lineElems[3],
-					Format: lineElems[4],
-				}
-				AutomationV.Actions = append(AutomationV.Actions, actionRss)
 			}
 		case "delay":
 			sec, err := ParseTimeCycle(lineElems[2])
